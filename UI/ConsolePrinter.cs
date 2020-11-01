@@ -1,5 +1,5 @@
 ﻿using Colorful;
-using Labyrinths.Engine;
+using Labyrinths.Core;
 using Labyrinths.Utils;
 using System;
 using System.Collections.Generic;
@@ -8,57 +8,51 @@ using System.Linq;
 
 namespace Labyrinths.UI
 {
-    public class ConsolePrinter
+    public static class ConsolePrinter
     {
-        protected int origRow;
-        protected int origCol;
+        private static int origRow;
+        private static int origCol;
+
+        private const int hudColumns = 4;
+        private const int hudRows = 6;
 
         static private string consoleText;
 
-        static public void _PrintMessage(string message, bool clear)
-        {    
+        public static void PrintMessage(string message, bool clear)
+        {
             Colorful.Console.WriteLine(message);
 
+            message += "\r\n";
             if (!clear)
             {
-                consoleText += message + "\r\n";
+                consoleText += message;
             }
             else
             {
-                consoleText = message + "\r\n";
+                consoleText = message;
             }
         }
 
-        public void PrintMessage(string message, bool clear)
+        public static void PrintAction(Entity performerEntity, string action, Entity performedOnEntity, bool exclamation)
         {
-            _PrintMessage(message, clear);
+            var delimiter = exclamation ? "!" : ".";
+            var message = string.Format("{0} {1} {2}{3}", performerEntity.Name, action, performedOnEntity.Name, delimiter);
+            PrintMessage(message, false);
         }
 
-        public void PrintAction(Entity performerEntity, string action, Entity performedOnEntity, bool exclamation)
+        public static void PrintStats(string characterName, Stats stats)
         {
-            var exc = exclamation ? "!" : ".";
-            var message = String.Format("{0} {1} {2}{3}", performerEntity.Name, action, performedOnEntity.Name, exc);
-            _PrintMessage(message, false);
+            var message = string.Format("{0} (Power: {1} | Speed: {2} | Stamina: {3} | Defense: {4})", characterName, stats.Power, stats.Speed, stats.Stamina, stats.Defense);
+            PrintMessage(message, false);
         }
 
-        public void PrintStats(string characterName, Stats stats)
+        public static void PrintHealth(string name, HealthMeter healthMeter)
         {
-            var message = String.Format("{0} (Power: {1} | Speed: {2} | Stamina: {3} | Defense: {4})", characterName, stats.Power, stats.Speed, stats.Stamina, stats.Defense);
-            _PrintMessage(message, false);
+            var message = string.Format("{0} (Health: {1})", name, healthMeter.Health);
+            PrintMessage(message, false);
         }
 
-        public void PrintHealth(string name, HealthMeter healthMeter)
-        {
-            var message = String.Format("{0} (Health: {1})", name, healthMeter.Health);
-            _PrintMessage(message, false);
-        }
-
-        public void PrintMenu()
-        {
-
-        }
-
-        public void PrintStartScreen()
+        public static void PrintStartScreen(string playerName, string gameName)
         {
 #if DEBUG
             FigletFont font = FigletFont.Load("../../../big.flf");
@@ -76,32 +70,31 @@ namespace Labyrinths.UI
 
             var height = 16;
             PrintFrame(height, false, false, text, height + 2);
+            PrintMessage("Hello " + playerName, false);
+            PrintMessage("Welcome to " + gameName + ".", false);
         }
 
-        public void PrintHUD(List<Entity> entities, string playerName)
+        public static void PrintHUD(List<Entity> entities, Hero player)
         {
-            const int columns = 4;
-            const int linesInColumn = 6;
             var lineLength = Colorful.Console.WindowWidth - 6;
             List<ColorfulText> text = new List<ColorfulText>();
-            string[] textLines = new string[linesInColumn];
+            string[] textLines = new string[hudRows];
 
-            var columnTitle = new string[columns] { " Heroes", " Enemies", " Item Bag", " Avalaible Commands"};
-            for (int i = 0; i < columnTitle.Count(); i++)
+            var columnHeaders = new string[hudColumns] { " Heroes", " Enemies", " Item Bag", " Avalaible Commands" };
+            foreach (var header in columnHeaders)
             {
-                textLines[0] += columnTitle[i] + ' '.Repeat(lineLength / columns - columnTitle[i].Length);
+                textLines[0] += header + ' '.Repeat(lineLength / hudColumns - header.Length);
             }
             text.Add(new ColorfulText(textLines[0], Color.BlueViolet));
 
             var heroes = entities.Where(e => e.Type == EntityType.Hero);
             var enemies = entities.Where(e => e.Type == EntityType.Enemy);
-            var items = heroes.Where(h => h.Name == playerName).FirstOrDefault().ItemBag
+            var items = player.ItemBag
                         .GroupBy(item => item.Name)
                         .Select(item => new { Name = item.Key, Count = item.Count() });
             var availableCommands = GetAvailableCommands();
 
-            var height = 6;
-            PrintFrame(height, true, true, text, -1);
+            PrintFrame(hudRows, true, true, text, -1);
 
             // Save the top and left coordinates.
             origRow = Colorful.Console.CursorTop;
@@ -117,28 +110,28 @@ namespace Labyrinths.UI
             count = 0;
             foreach (var enemy in enemies)
             {
-                Colorful.Console.SetCursorPosition((lineLength / columns) + 1, origRow + 3 + count);
+                Colorful.Console.SetCursorPosition((lineLength / hudColumns) + 1, origRow + 3 + count);
                 Colorful.Console.WriteLine(enemy.Name + ": " + PrintHealthBar(enemy.HealthMeter), Color.Aqua);
                 count++;
             }
             count = 0;
             foreach (var item in items)
             {
-                Colorful.Console.SetCursorPosition(2 * (lineLength / columns) + 1, origRow + 3 + count);
+                Colorful.Console.SetCursorPosition(2 * (lineLength / hudColumns) + 1, origRow + 3 + count);
                 Colorful.Console.WriteLine(item.Count + ": " + item.Name, Color.Yellow);
                 count++;
             }
             count = 0;
             foreach (var command in availableCommands)
             {
-                Colorful.Console.SetCursorPosition(3 * (lineLength / columns) + 1, origRow + 3 + count);
+                Colorful.Console.SetCursorPosition(3 * (lineLength / hudColumns) + 1, origRow + 3 + count);
                 Colorful.Console.WriteLine(command.ToString(), Color.Green);
                 count++;
             }
             Colorful.Console.SetCursorPosition(origCol, origRow);
         }
 
-        protected void PrintFrame(int height, bool clear, bool rewrite, List<ColorfulText> text, int returnCursorToRow)
+        static void PrintFrame(int height, bool clear, bool rewrite, List<ColorfulText> text, int returnCursorToRow)
         {
             height += 1;
 
@@ -167,13 +160,13 @@ namespace Labyrinths.UI
             var width = Colorful.Console.WindowWidth - 3;
 
             var horizontalLine = '-'.Repeat(width);
-            
+
             // Draw the bottom side.
             WriteAt("+" + horizontalLine + "+", 0, height);
 
             // Draw the top side.
             WriteAt("+" + horizontalLine + "+", 0, 0);
-            
+
             for (int i = 1; i <= height - 1; i++)
             {
                 WriteAt("|", 0, i);
@@ -183,7 +176,7 @@ namespace Labyrinths.UI
             Colorful.Console.SetCursorPosition(origCol, origRow + returnCursorToRow);
         }
 
-        protected void WriteAt(string s, int x, int y)
+        static void WriteAt(string s, int x, int y)
         {
             try
             {
@@ -197,7 +190,7 @@ namespace Labyrinths.UI
             }
         }
 
-        protected string PrintHealthBar(HealthMeter healthMeter)
+        static string PrintHealthBar(HealthMeter healthMeter)
         {
             var healthBar = "[";
             int emChars = Convert.ToInt32((healthMeter.Health / healthMeter.MaxHealth) * 10);
@@ -209,7 +202,7 @@ namespace Labyrinths.UI
             return healthBar;
         }
 
-        protected IEnumerable<string> GetAvailableCommands()
+        static IEnumerable<string> GetAvailableCommands()
         {
             var availableCommands = new List<string>()
             {

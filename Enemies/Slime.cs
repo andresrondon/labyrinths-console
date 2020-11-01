@@ -1,5 +1,5 @@
 ﻿using System;
-using Labyrinths.Engine;
+using Labyrinths.Core;
 
 namespace Labyrinths.Enemies
 {
@@ -15,12 +15,6 @@ namespace Labyrinths.Enemies
             Stats = new Stats(0.6f, 2, 2, 2);
             Type = EntityType.Enemy;
             IQ = 1;
-        }
-
-        override public void Spawn()
-        {
-            var message = String.Format("'{0}' spawned!", Name);
-            _printer.PrintMessage(message, false);
         }
     }
 }

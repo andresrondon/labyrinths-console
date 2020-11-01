@@ -1,26 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Labyrinths.UI;
 
-namespace Labyrinths.Engine
+namespace Labyrinths.Core
 {
     abstract public class Hero : Entity
     {
-        public Hero ()
-            : base()
-        {
-        }
-        override public void Walk(WalkDirection direction)
-        {
-            // ..
-        }
-
         override public void ReceiveDamage(Entity entity)
         {
-            //_printer.PrintAction(entity, "attacked", this, false);
-            var message = String.Format("{0} attacked {1}.", entity.Name, this.Name);
+            var message = string.Format("{0} attacked {1}.", entity.Name, this.Name);
 
             string postMessage;
             if (!this.IsDefending)
@@ -37,17 +23,17 @@ namespace Labyrinths.Engine
                 this.HealthMeter.ReceiveDamage(0);
             }
 
-            _printer.PrintMessage(message + postMessage, false);
+            ConsolePrinter.PrintMessage(message + postMessage, false);
 
             if (CheckDeath())
             {
-                Death(entity);
+                Die(entity);
             }
         }
-        public override void Death(Entity byEntity)
+        public override void Die(Entity byEntity)
         {
-            _printer.PrintAction(byEntity, "killed", this, true);
-            EntityKilled(this);
+            ConsolePrinter.PrintAction(byEntity, "killed", this, true);
+            OnEntityKilled.Invoke(this);
         }
     }
 }

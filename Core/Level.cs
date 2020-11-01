@@ -4,7 +4,7 @@ using System.Linq;
 using Labyrinths.Enemies;
 using Labyrinths.UI;
 
-namespace Labyrinths.Engine
+namespace Labyrinths.Core
 {
     public class Level
     {

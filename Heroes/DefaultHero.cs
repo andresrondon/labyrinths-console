@@ -1,4 +1,4 @@
-﻿using Labyrinths.Engine;
+﻿using Labyrinths.Core;
 
 namespace Labyrinths.Heroes
 {

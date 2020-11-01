@@ -1,4 +1,4 @@
-﻿using Labyrinths.Engine;
+﻿using Labyrinths.Core;
 using Labyrinths.UI;
 
 namespace Labyrinths.Items
@@ -21,7 +21,7 @@ namespace Labyrinths.Items
         public void Use(Entity entity)
         {
             entity.HealthMeter.RestoreHealth(Value);
-            ConsolePrinter._PrintMessage(entity.Name + " used " + this.Name + ". Health +" + Value, false);
+            ConsolePrinter.PrintMessage(entity.Name + " used " + this.Name + ". Health +" + Value, false);
         }
     }
 }

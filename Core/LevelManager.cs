@@ -1,19 +1,16 @@
-﻿using Labyrinths.UI;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace Labyrinths.Engine
+namespace Labyrinths.Core
 {
-    class LevelSystem
+    public class LevelManager
     {
         public Level CurrentLevel { get; set; }
         private float DifficultyFactor { get; set; }
 
         const int maxFactorToPassLevel = 3;
 
-        public LevelSystem(float difficultyFactor, List<Entity> entities)
+        public LevelManager(float difficultyFactor, List<Entity> entities)
         {
             DifficultyFactor = difficultyFactor;
             CurrentLevel = new Level(1, 1 * DifficultyFactor, WalkDirection.South, entities);

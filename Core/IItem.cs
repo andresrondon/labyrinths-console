@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Labyrinths.Engine
+namespace Labyrinths.Core
 {
     public interface IItem
     {

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Labyrinths.Engine.AI
+namespace Labyrinths.Core.AI
 {
     public delegate void BeingAttackedEvent(Hero byHero);
 }

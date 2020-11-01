@@ -1,42 +1,30 @@
-﻿using Labyrinths.Engine.AI;
+﻿using Labyrinths.Core.AI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Colorful;
-using System.Drawing;
 using Labyrinths.Items;
+using Labyrinths.UI;
 
-namespace Labyrinths.Engine
+namespace Labyrinths.Core
 {
     abstract public class Enemy : Entity, IEnemyAI
     {
         public EnemyRank Rank { get; set; }
         public int IQ { get; set; }
 
-        public event BeingAttackedEvent BeingAttacked;
+        public event BeingAttackedEvent OnBeingAttacked;
 
         public Enemy ()
             :base()
         {
-            BeingAttacked += DecideAction;
+            OnBeingAttacked += DecideAction;
         }
-
-        override public void Walk (WalkDirection direction)
-        {
-
-        }
-
-        abstract public void Spawn();
 
         public void DecideAction(Hero heroToAttack)
         {
             int intelligenceFactor = 15 + IQ;
-            int chanceFactor = 0;
-
             Random rand = new Random();
-            chanceFactor = rand.Next(1, intelligenceFactor + 1);
+            int chanceFactor = rand.Next(1, intelligenceFactor + 1);
 
             // Common attack
             if (chanceFactor >= 1 && chanceFactor <= 11)
@@ -64,41 +52,40 @@ namespace Labyrinths.Engine
 
         public override void ReceiveDamage(Entity entity)
         {
-            //_printer.PrintAction(entity, "attacked", this, false);
-            var message = String.Format("{0} attacked {1}.", entity.Name, this.Name);
+            var message = string.Format("{0} attacked {1}.", entity.Name, Name);
 
-            string postMessage = "";
-            if (!this.IsDefending)
+            string postMessage;
+            if (!IsDefending)
             {
-                var value = entity.Damage() - (this.Stats.Defense * 2);
+                var value = (int)entity.Damage() - (Stats.Defense * 2);
                 postMessage = " -" + value;
-                postMessage += value >= (this.HealthMeter.MaxHealth / 2) ? " CRITICAL" : "";
-                _printer.PrintMessage(message + postMessage, false);
-                this.HealthMeter.ReceiveDamage(value);
+                postMessage += value >= (HealthMeter.MaxHealth / 2) ? " CRITICAL" : "";
+                ConsolePrinter.PrintMessage(message + postMessage, false);
+                HealthMeter.ReceiveDamage(value);
 
                 if (CheckDeath())
                 {
-                    Death(entity);
+                    Die(entity);
                 }
                 else
                 {
-                    BeingAttacked(entity as Hero);
+                    OnBeingAttacked.Invoke(entity as Hero);
                 }
             }
             else
             {
-                postMessage = "..but " + this.Name + " defended.";
-                _printer.PrintMessage(message + postMessage, false);
+                postMessage = "..but " + Name + " defended.";
+                ConsolePrinter.PrintMessage(message + postMessage, false);
 
-                this.HealthMeter.ReceiveDamage(0);
+                HealthMeter.ReceiveDamage(0);
                 IsDefending = false;
             }
         }
 
-        public override void Death(Entity byEntity)
+        public override void Die(Entity byEntity)
         {
-            _printer.PrintAction(byEntity, "killed", this, true);
-            EntityKilled(this);
+            ConsolePrinter.PrintAction(byEntity, "killed", this, true);
+            OnEntityKilled(this);
 
             // Drop items  (give the player Potions and stuff.)
             Random rand = new Random();
@@ -108,7 +95,7 @@ namespace Labyrinths.Engine
             {
                 var item = GenerateItem();
                 byEntity.ItemBag.Add(item);
-                _printer.PrintMessage(byEntity.Name + " gadered an item '" + item.Name + "' from " + this.Name + "!", false);
+                ConsolePrinter.PrintMessage(byEntity.Name + " gadered an item '" + item.Name + "' from " + Name + "!", false);
             }
         }
 
@@ -126,6 +113,12 @@ namespace Labyrinths.Engine
 
             var item = (IItem)Activator.CreateInstance(itemTypes.ElementAt(rand.Next(0, itemTypes.Count)));
             return item;
+        }
+
+        virtual public void Spawn()
+        {
+            var message = string.Format("'{0}' spawned!", Name);
+            ConsolePrinter.PrintMessage(message, false);
         }
     }
 }
