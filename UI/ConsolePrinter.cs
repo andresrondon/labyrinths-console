@@ -2,10 +2,8 @@
 using Labyrinths.Engine;
 using Labyrinths.Utils;
 using System;
-using System.Text;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Linq;
 
 namespace Labyrinths.UI
@@ -62,7 +60,11 @@ namespace Labyrinths.UI
 
         public void PrintStartScreen()
         {
+#if DEBUG
+            FigletFont font = FigletFont.Load("../../../big.flf");
+#else
             FigletFont font = FigletFont.Load("big.flf");
+#endif
             Figlet figlet = new Figlet(font);
 
             // Set the Title Screen text
