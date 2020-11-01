@@ -2,15 +2,12 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <StartupObject></StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="UI\ConsolePrinter - Copy.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Colorful.Console" Version="1.1.2" />
+    <PackageReference Include="Colorful.Console" Version="1.2.11" />
   </ItemGroup>
 
 </Project>

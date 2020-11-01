@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Labyrinths.Levels
+namespace Labyrinths.Core
 {
-    class Storey1
+    public enum EntityType
     {
+        Hero = 1,
+        Enemy
     }
 }

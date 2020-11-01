@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using Labyrinths.Enemies;
 
-namespace Labyrinths.Engine
+namespace Labyrinths.Core
 {
     static public class EnemyFactory
     {
         // The higher, the softer. The lower, the harder.
-        static float difficultyAdjuster = 1.03f;
+        static readonly float difficultyAdjuster = 1.03f;
 
         // The higher, the harder. The lower, the softer.
-        static int baseDifficulty = 170;
+        static readonly int baseDifficulty = 170;
 
         const int maxEnemiesInChamber = 5;
 

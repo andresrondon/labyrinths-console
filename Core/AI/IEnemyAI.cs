@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Labyrinths.Engine.AI
+namespace Labyrinths.Core.AI
 {
     public interface IEnemyAI
     {
         int IQ { get; set; }
         
-        event BeingAttackedEvent BeingAttacked;
+        event BeingAttackedEvent OnBeingAttacked;
 
         void DecideAction(Hero heroToAttack);
     }

@@ -3,7 +3,7 @@ using Labyrinths.UI;
 using System;
 using System.Collections.Generic;
 
-namespace Labyrinths.Engine
+namespace Labyrinths.Core
 {
     public class Room
     {
@@ -27,7 +27,7 @@ namespace Labyrinths.Engine
 
             foreach (var entity in Entities)
             {
-                entity.EntityKilled += OnEntityKilled;
+                entity.OnEntityKilled += OnEntityKilled;
             }
         }
 
@@ -70,12 +70,12 @@ namespace Labyrinths.Engine
         {
             if (Level.Id < 4)
             {
-                ConsolePrinter._PrintMessage("Storey " + Level.Id + ", Room " + Id + ".", true);
+                ConsolePrinter.PrintMessage("Storey " + Level.Id + ", Room " + Id + ".", true);
             }
             else
             {
-                ConsolePrinter._PrintMessage("You have riched the final boss!", true);
-                ConsolePrinter._PrintMessage("Behold the great Fenriswolf, son of Loki.", false);
+                ConsolePrinter.PrintMessage("You have riched the final boss!", true);
+                ConsolePrinter.PrintMessage("Behold the great Fenriswolf, son of Loki.", false);
             }
         }
 

@@ -1,5 +1,6 @@
-﻿using Labyrinths.Engine;
+﻿using Labyrinths.Core;
 using Labyrinths.Items;
+using Labyrinths.UI;
 using System.Collections.Generic;
 
 namespace Labyrinths.Enemies
@@ -22,7 +23,7 @@ namespace Labyrinths.Enemies
         override public void Spawn()
         {
             var message = "You have riched the final boss!\r\nBehold the great Fenriswolf, son of Loki.";
-            _printer.PrintMessage(message, true);
+            ConsolePrinter.PrintMessage(message, true);
         }
     }
 }

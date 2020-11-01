@@ -3,7 +3,7 @@ using Labyrinths.UI;
 using System;
 using System.Collections.Generic;
 
-namespace Labyrinths.Engine
+namespace Labyrinths.Core
 {
     public class Chamber
     {
@@ -27,13 +27,13 @@ namespace Labyrinths.Engine
 
             foreach (var entity in Entities)
             {
-                entity.EntityKilled += OnEntityKilled;
+                entity.OnEntityKilled += OnEntityKilled;
             }
         }
 
         public string GetPossibleDirections()
         {
-            string possibleDirections = String.Empty;
+            string possibleDirections = string.Empty;
             var directionsArray = Enum.GetNames(typeof(WalkDirection));
             int index = (int)CameFrom - 1;
             index = index == 0 ? 2 : index;
@@ -57,6 +57,7 @@ namespace Labyrinths.Engine
                 count++;
             }
             while (count < length);
+
             possibleDirections = possibleDirections.Remove(possibleDirections.Length - 3);
             possibleDirections = CameFrom == WalkDirection.North ? possibleDirections.Replace("North", "South") : possibleDirections;
             return possibleDirections;
@@ -70,11 +71,7 @@ namespace Labyrinths.Engine
         {
             if (Level.Id < 4)
             {
-                ConsolePrinter._PrintMessage("Storey " + Level.Id + ", Chamber " + Id + ".", true);
-            }
-            else
-            {
-                
+                ConsolePrinter.PrintMessage("Storey " + Level.Id + ", Chamber " + Id + ".", true);
             }
         }
 
