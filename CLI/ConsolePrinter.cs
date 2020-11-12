@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
-namespace Labyrinths.UI
+namespace Labyrinths.CLI
 {
     public static class ConsolePrinter
     {
@@ -74,7 +74,7 @@ namespace Labyrinths.UI
             PrintMessage("Welcome to " + gameName + ".", false);
         }
 
-        public static void PrintHUD(List<Entity> entities, Hero player)
+        public static void PrintHUD(IEnumerable<Hero> heroes, IEnumerable<Enemy> enemies, IEnumerable<IItem> itemBag)
         {
             var lineLength = Colorful.Console.WindowWidth - 6;
             List<ColorfulText> text = new List<ColorfulText>();
@@ -87,11 +87,9 @@ namespace Labyrinths.UI
             }
             text.Add(new ColorfulText(textLines[0], Color.BlueViolet));
 
-            var heroes = entities.Where(e => e.Type == EntityType.Hero);
-            var enemies = entities.Where(e => e.Type == EntityType.Enemy);
-            var items = player.ItemBag
+            var items = itemBag
                         .GroupBy(item => item.Name)
-                        .Select(item => new { Name = item.Key, Count = item.Count() });
+                        .Select(itemGroup => new { Name = itemGroup.Key, Count = itemGroup.Count() });
             var availableCommands = GetAvailableCommands();
 
             PrintFrame(hudRows, true, true, text, -1);

@@ -5,7 +5,7 @@ using System.Linq;
 using Labyrinths.Core;
 using System.Text;
 
-namespace Labyrinths.UI
+namespace Labyrinths.CLI
 {
     public class TextBasedEngine : GameEngine
     {
@@ -37,7 +37,7 @@ namespace Labyrinths.UI
             CheckGameStatus();
 
             ConsolePrinter.PrintMessage("Please enter a command.", false);
-            ConsolePrinter.PrintHUD(Entities, Player);
+            PrintHUD();
 
             string command = Console.ReadLine();
             command = command.ToLower();
@@ -113,7 +113,7 @@ namespace Labyrinths.UI
             if (!result)
             {
                 ConsolePrinter.PrintMessage("Invalid entity name '" + entityName + "'!", false);
-                ConsolePrinter.PrintHUD(Entities, Player);
+                PrintHUD();
             }
 
             return result;
@@ -125,7 +125,7 @@ namespace Labyrinths.UI
             if (!result)
             {
                 ConsolePrinter.PrintMessage("You don't have any '" + itemName + "'.", false);
-                ConsolePrinter.PrintHUD(Entities, Player);
+                PrintHUD();
             }
 
             return result;
@@ -198,7 +198,7 @@ namespace Labyrinths.UI
                     break;
                 default:
                     ConsolePrinter.PrintMessage(directionString + " is not a valid direction.", false);
-                    ConsolePrinter.PrintHUD(Entities, Player);
+                    PrintHUD();
                     direction = MoveToChamberCommand(Console.ReadLine(), cameFrom);
                     break;
             }
@@ -206,7 +206,7 @@ namespace Labyrinths.UI
             if (direction == cameFrom)
             {
                 ConsolePrinter.PrintMessage("You can't go back in there...", false);
-                ConsolePrinter.PrintHUD(Entities, Player);
+                PrintHUD();
                 direction = MoveToChamberCommand(Console.ReadLine(), cameFrom);
             }
 
@@ -238,7 +238,7 @@ namespace Labyrinths.UI
             return hero;
         }
 
-        override protected void Loose()
+        override protected void Lose()
         {
             Console.Clear();
             ConsolePrinter.PrintMessage("Thou art dead!", true);
@@ -252,7 +252,7 @@ namespace Labyrinths.UI
             ConsolePrinter.PrintMessage("Thou eliminated the monsters in this chamber!", false);
             ConsolePrinter.PrintMessage("Thou shall now proceed to the next chamber in the direction you choose.", false);
             ConsolePrinter.PrintMessage(levelSystem.CurrentLevel.CurrentChamber.GetPossibleDirections(), false);
-            ConsolePrinter.PrintHUD(Entities, Player);
+            PrintHUD();
 
             var speed = Player.Stats.Speed;
 
@@ -266,6 +266,11 @@ namespace Labyrinths.UI
             ConsolePrinter.PrintMessage("Press enter to exit.", false);
             Console.ReadLine();
             Environment.Exit(0);
+        }
+
+        private void PrintHUD()
+        {
+            ConsolePrinter.PrintHUD(Heroes, Enemies, Player.ItemBag);
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using Labyrinths.Enemies;
-using Labyrinths.UI;
+using Labyrinths.CLI;
 using System;
 using System.Collections.Generic;
 

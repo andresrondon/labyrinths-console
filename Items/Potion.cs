@@ -1,5 +1,5 @@
 ﻿using Labyrinths.Core;
-using Labyrinths.UI;
+using Labyrinths.CLI;
 
 namespace Labyrinths.Items
 {

@@ -1,7 +1,5 @@
 ﻿using Labyrinths.Core;
-using Labyrinths.Items;
-using Labyrinths.UI;
-using System.Collections.Generic;
+using Labyrinths.CLI;
 
 namespace Labyrinths.Enemies
 {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Labyrinths.Enemies;
-using Labyrinths.UI;
+using Labyrinths.CLI;
 
 namespace Labyrinths.Core
 {

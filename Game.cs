@@ -1,4 +1,4 @@
-﻿using Labyrinths.UI;
+﻿using Labyrinths.CLI;
 
 namespace Labyrinths
 {
@@ -6,9 +6,7 @@ namespace Labyrinths
     {
         static void Main(string[] args)
         {
-            string playerName = args[0];
-
-            TextBasedEngine Engine = new TextBasedEngine(playerName);
+            new TextBasedEngine(playerName: args[0]);
         }
     }
 }

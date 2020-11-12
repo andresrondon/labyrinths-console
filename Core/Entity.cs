@@ -1,4 +1,4 @@
-﻿using Labyrinths.UI;
+﻿using Labyrinths.CLI;
 using System.Collections.Generic;
 
 namespace Labyrinths.Core

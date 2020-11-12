@@ -6,13 +6,16 @@ namespace Labyrinths.Core
 {
     public abstract class GameEngine
     {
-        protected string gameName = "Labyrinths: Black Gate";
+        protected readonly string gameName = "Labyrinths: Black Gate";
         protected LevelManager levelSystem;
 
         protected Hero Player { get; set; }
         protected List<Entity> Entities { get; set; }
 
-        abstract protected void StartGame(float difficultyFactor);
+        protected IEnumerable<Hero> Heroes => Entities.Where(e => e.Type == EntityType.Hero).Select(e => e as Hero);
+        protected IEnumerable<Enemy> Enemies => Entities.Where(e => e.Type == EntityType.Enemy).Select(e => e as Enemy);
+        protected Enemy GetEnemy(string name) => Entities.Find(e => e.Name.ToLower() == name) as Enemy;
+        private bool HasEntity(EntityType entityType) => Entities.Any(e => e.Type == entityType);
 
         protected void AttackEnemy(Enemy enemy)
         {
@@ -38,22 +41,21 @@ namespace Labyrinths.Core
             IEnumerable<Entity> enemies;
             if (enemyBeingAttacked == null)
             {
-                enemies = GetEnemies();
+                enemies = Enemies;
             }
             else
             {
-                enemies = GetEnemies().Where(e => e != enemyBeingAttacked);
+                enemies = Enemies.Where(e => e != enemyBeingAttacked);
             }
-            var heroes = GetHeroes();
-            Random rand = new Random();
 
+            Random rand = new Random();
             foreach (var enemy in enemies)
             {
-                var count = heroes.Count();
+                var count = Heroes.Count();
                 if (count < 1)
                     break;
-                enemy.Attack(heroes.ElementAt(rand.Next(0, count - 1)));
-                if (count != heroes.Count())
+                enemy.Attack(Heroes.ElementAt(rand.Next(0, count - 1)));
+                if (count != Heroes.Count())
                     break;
             }
         }
@@ -67,15 +69,15 @@ namespace Labyrinths.Core
 
         protected void CheckGameStatus()
         {
-            CheckLoose();
+            CheckLose();
             CheckChamberCleared();
         }
 
-        private void CheckLoose()
+        private void CheckLose()
         {
             if (!HasEntity(EntityType.Hero))
             {
-                Loose();
+                Lose();
             }
         }
 
@@ -94,28 +96,9 @@ namespace Labyrinths.Core
             }
         }
 
-        private bool HasEntity(EntityType entityType)
-        {
-            return Entities.Any(e => e.Type == entityType);
-        }
-
-        protected IEnumerable<Hero> GetHeroes()
-        {
-            return Entities.Where(e => e.Type == EntityType.Hero).Select(e => e as Hero);
-        }
-
-        protected IEnumerable<Enemy> GetEnemies()
-        {
-            return Entities.Where(e => e.Type == EntityType.Enemy).Select(e => e as Enemy);
-        }
-
-        protected Enemy GetEnemy(string name)
-        {
-            return Entities.Find(e => e.Name.ToLower() == name) as Enemy;
-        }
-
+        abstract protected void StartGame(float difficultyFactor);
         abstract protected void WinGame();
-        abstract protected void Loose();
+        abstract protected void Lose();
         abstract protected void ChamberCleared();
     }
 }

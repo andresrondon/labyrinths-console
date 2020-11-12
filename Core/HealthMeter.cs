@@ -1,7 +1,4 @@
-﻿using Labyrinths.UI;
-using System.Drawing;
-
-namespace Labyrinths.Core
+﻿namespace Labyrinths.Core
 {
     public class HealthMeter
     {
