@@ -12,6 +12,7 @@ namespace Labyrinths.CLI
     {
         private static int origRow;
         private static int origCol;
+        private static readonly int lineLength = Colorful.Console.WindowWidth - 6;
 
         private const int hudColumns = 4;
         private const int hudRows = 6;
@@ -76,57 +77,60 @@ namespace Labyrinths.CLI
 
         public static void PrintHUD(IEnumerable<Hero> heroes, IEnumerable<Enemy> enemies, IEnumerable<IItem> itemBag)
         {
-            var lineLength = Colorful.Console.WindowWidth - 6;
-            List<ColorfulText> text = new List<ColorfulText>();
-            string[] textLines = new string[hudRows];
+            // Print frame and headers
+            List<ColorfulText> text = GenerateHeaders();
+            PrintFrame(hudRows, true, true, text, -1);
 
+            // Print columns
+            PrintColumns(heroes, enemies, itemBag);
+
+            // Return cursor
+            Colorful.Console.SetCursorPosition(origCol, origRow);
+        }
+
+        private static List<ColorfulText> GenerateHeaders()
+        {
+            var textLines = new string[hudRows];
             var columnHeaders = new string[hudColumns] { " Heroes", " Enemies", " Item Bag", " Avalaible Commands" };
+
             foreach (var header in columnHeaders)
             {
                 textLines[0] += header + ' '.Repeat(lineLength / hudColumns - header.Length);
             }
-            text.Add(new ColorfulText(textLines[0], Color.BlueViolet));
 
+            var text = new List<ColorfulText>
+            {
+                new ColorfulText(textLines[0], Color.BlueViolet)
+            };
+            return text;
+        }
+
+        private static void PrintColumns(IEnumerable<Hero> heroes, IEnumerable<Enemy> enemies, IEnumerable<IItem> itemBag)
+        {
             var items = itemBag
-                        .GroupBy(item => item.Name)
-                        .Select(itemGroup => new { Name = itemGroup.Key, Count = itemGroup.Count() });
+                            .GroupBy(item => item.Name)
+                            .Select(itemGroup => new { Name = itemGroup.Key, Count = itemGroup.Count() });
             var availableCommands = GetAvailableCommands();
 
-            PrintFrame(hudRows, true, true, text, -1);
-
-            // Save the top and left coordinates.
+            // Save the top and left coordinates first
             origRow = Colorful.Console.CursorTop;
             origCol = Colorful.Console.CursorLeft;
 
+            PrintColumn(heroes, 0, (hero) => hero.Name + ": " + PrintHealthBar(hero.HealthMeter), Color.Aqua);
+            PrintColumn(enemies, 1, (enemy) => enemy.Name + ": " + PrintHealthBar(enemy.HealthMeter), Color.Aqua);
+            PrintColumn(items, 2, (item) => item.Count + ": " + item.Name, Color.Yellow);
+            PrintColumn(availableCommands, 3, (command) => command, Color.Green);
+        }
+
+        static void PrintColumn<T>(IEnumerable<T> enumerable, int rowIndex, Func<T, string> rowTextConstructor, Color color)
+        {
             var count = 0;
-            foreach (var hero in heroes)
+            foreach (var item in enumerable)
             {
-                Colorful.Console.SetCursorPosition(origCol + 1, origRow + 3 + count);
-                Colorful.Console.WriteLine(hero.Name + ": " + PrintHealthBar(hero.HealthMeter), Color.Aqua);
+                Colorful.Console.SetCursorPosition(rowIndex * (lineLength / hudColumns) + 1, origRow + 3 + count);
+                Colorful.Console.WriteLine(rowTextConstructor(item), color);
                 count++;
             }
-            count = 0;
-            foreach (var enemy in enemies)
-            {
-                Colorful.Console.SetCursorPosition((lineLength / hudColumns) + 1, origRow + 3 + count);
-                Colorful.Console.WriteLine(enemy.Name + ": " + PrintHealthBar(enemy.HealthMeter), Color.Aqua);
-                count++;
-            }
-            count = 0;
-            foreach (var item in items)
-            {
-                Colorful.Console.SetCursorPosition(2 * (lineLength / hudColumns) + 1, origRow + 3 + count);
-                Colorful.Console.WriteLine(item.Count + ": " + item.Name, Color.Yellow);
-                count++;
-            }
-            count = 0;
-            foreach (var command in availableCommands)
-            {
-                Colorful.Console.SetCursorPosition(3 * (lineLength / hudColumns) + 1, origRow + 3 + count);
-                Colorful.Console.WriteLine(command.ToString(), Color.Green);
-                count++;
-            }
-            Colorful.Console.SetCursorPosition(origCol, origRow);
         }
 
         static void PrintFrame(int height, bool clear, bool rewrite, List<ColorfulText> text, int returnCursorToRow)
